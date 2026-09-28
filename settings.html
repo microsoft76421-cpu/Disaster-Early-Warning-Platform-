@@ -1,0 +1,1751 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Sentinel | Settings</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+            transition: 0.3s;
+        }
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            padding: 25px 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 35px;
+            padding-left: 12px;
+        }
+
+        .logo span {
+            color: #38bdf8;
+        }
+
+        .nav a {
+            display: block;
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 13px 15px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .nav a:hover {
+            background: #1e293b;
+            color: white;
+        }
+
+        .nav a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+        }
+
+        .header p {
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        .system-status {
+            padding: 8px 14px;
+            border-radius: 20px;
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* =====================================================
+           TABS
+        ===================================================== */
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            border: none;
+            background: white;
+            color: #64748b;
+            padding: 11px 17px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .tab:hover {
+            background: #e2e8f0;
+        }
+
+        .tab.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* =====================================================
+           SECTION
+        ===================================================== */
+
+        .settings-section {
+            display: none;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        }
+
+        .card h2 {
+            margin-bottom: 7px;
+        }
+
+        .card-description {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        /* =====================================================
+           FORM
+        ===================================================== */
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            outline: none;
+            background: white;
+            color: #1f2937;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #2563eb;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* =====================================================
+           TOGGLE
+        ===================================================== */
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 17px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .setting-info span {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: #cbd5e1;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: 3px;
+            top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .switch input:checked + .slider {
+            background: #2563eb;
+        }
+
+        .switch input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            border: none;
+            padding: 11px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* =====================================================
+           SYSTEM INFORMATION
+        ===================================================== */
+
+        .system-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .system-item {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .system-item span {
+            display: block;
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .system-item strong {
+            font-size: 15px;
+        }
+
+        /* =====================================================
+           MESSAGE
+        ===================================================== */
+
+        .save-message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 7px;
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 14px;
+        }
+
+        .save-message.show {
+            display: block;
+        }
+
+        /* =====================================================
+           DARK MODE
+        ===================================================== */
+
+        body.dark-mode {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .card,
+        body.dark-mode .tab {
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .tab {
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .tab.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        body.dark-mode .card-description,
+        body.dark-mode .header p,
+        body.dark-mode .setting-info span {
+            color: #94a3b8;
+        }
+
+        body.dark-mode input,
+        body.dark-mode select {
+            background: #0f172a;
+            color: #e2e8f0;
+            border-color: #475569;
+        }
+
+        body.dark-mode .setting-row {
+            border-color: #334155;
+        }
+
+        body.dark-mode .system-item {
+            background: #0f172a;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .form-grid,
+            .system-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================================
+     SIDEBAR
+========================================================== -->
+
+<div class="sidebar">
+
+    <div class="logo">
+        SENTINEL<span>.</span>
+    </div>
+
+    <div class="nav">
+
+        <a href="index.html">
+            Dashboard
+        </a>
+
+        <a href="alerts.html">
+            Alerts
+        </a>
+
+        <a href="environmental.html">
+            Environmental Data
+        </a>
+
+        <a href="risk-analysis.html">
+            Risk Analysis
+        </a>
+
+        <a href="zones.html">
+            Zones
+        </a>
+
+        <a href="historical-data.html">
+            Historical Data
+        </a>
+
+        <a href="reports.html">
+            Reports
+        </a>
+
+        <a href="settings.html" class="active">
+            Settings
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     MAIN
+========================================================== -->
+
+<div class="main">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div>
+
+            <h1>
+                Settings
+            </h1>
+
+            <p>
+                Configure Sentinel monitoring and notification
+                preferences.
+            </p>
+
+        </div>
+
+
+        <div
+            id="system-status"
+            class="system-status">
+
+            SYSTEM OPERATIONAL
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         TABS
+    ======================================================= -->
+
+    <div class="tabs">
+
+        <button
+            class="tab active"
+            onclick="showSection('general', this)">
+
+            General
+
+        </button>
+
+
+        <button
+            class="tab"
+            onclick="showSection('notifications', this)">
+
+            Notifications
+
+        </button>
+
+
+        <button
+            class="tab"
+            onclick="showSection('monitoring', this)">
+
+            Monitoring
+
+        </button>
+
+
+        <button
+            class="tab"
+            onclick="showSection('system', this)">
+
+            System
+
+        </button>
+
+    </div>
+
+
+    <!-- ======================================================
+         GENERAL
+    ======================================================= -->
+
+    <section
+        id="general"
+        class="settings-section active">
+
+        <div class="card">
+
+            <h2>
+                General Settings
+            </h2>
+
+            <p class="card-description">
+                Configure the basic information displayed by
+                the Sentinel platform.
+            </p>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="systemName">
+                        System Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="systemName"
+                        value="Sentinel">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="adminEmail">
+                        Administrator Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="adminEmail"
+                        placeholder="admin@example.com">
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="language">
+                        Language
+                    </label>
+
+                    <select id="language">
+
+                        <option value="English">
+                            English
+                        </option>
+
+                        <option value="French">
+                            French
+                        </option>
+
+                        <option value="Hausa">
+                            Hausa
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Appearance
+                    </label>
+
+                    <div class="setting-row">
+
+                        <div class="setting-info">
+
+                            <strong>
+                                Dark Mode
+                            </strong>
+
+                            <span>
+                                Use a darker interface.
+                            </span>
+
+                        </div>
+
+
+                        <label class="switch">
+
+                            <input
+                                type="checkbox"
+                                id="darkMode"
+                                onchange="toggleDarkMode()">
+
+                            <span class="slider"></span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="button-group">
+
+                <button
+                    class="btn btn-primary"
+                    onclick="saveGeneral()">
+
+                    Save General Settings
+
+                </button>
+
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="resetGeneral()">
+
+                    Reset
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="general-message"
+                class="save-message">
+
+                General settings saved successfully.
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
+         NOTIFICATIONS
+    ======================================================= -->
+
+    <section
+        id="notifications"
+        class="settings-section">
+
+        <div class="card">
+
+            <h2>
+                Notification Settings
+            </h2>
+
+            <p class="card-description">
+                Control which Sentinel events should generate
+                notifications.
+            </p>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        Disaster Alerts
+                    </strong>
+
+                    <span>
+                        Receive notifications when an active
+                        disaster alert is generated.
+                    </span>
+
+                </div>
+
+
+                <label class="switch">
+
+                    <input
+                        type="checkbox"
+                        id="alertNotifications"
+                        checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        High-Risk Notifications
+                    </strong>
+
+                    <span>
+                        Notify administrators when risk reaches
+                        the configured threshold.
+                    </span>
+
+                </div>
+
+
+                <label class="switch">
+
+                    <input
+                        type="checkbox"
+                        id="highRiskNotifications"
+                        checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        Environmental Updates
+                    </strong>
+
+                    <span>
+                        Receive updates when environmental
+                        conditions change.
+                    </span>
+
+                </div>
+
+
+                <label class="switch">
+
+                    <input
+                        type="checkbox"
+                        id="environmentalNotifications"
+                        checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        Daily Summary
+                    </strong>
+
+                    <span>
+                        Receive a daily summary of monitoring data.
+                    </span>
+
+                </div>
+
+
+                <label class="switch">
+
+                    <input
+                        type="checkbox"
+                        id="dailySummary">
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="button-group">
+
+                <button
+                    class="btn btn-primary"
+                    onclick="saveNotifications()">
+
+                    Save Notification Settings
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="notification-message"
+                class="save-message">
+
+                Notification settings saved successfully.
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
+         MONITORING
+    ======================================================= -->
+
+    <section
+        id="monitoring"
+        class="settings-section">
+
+        <div class="card">
+
+            <h2>
+                Monitoring Settings
+            </h2>
+
+            <p class="card-description">
+                Configure how frequently Sentinel checks and
+                records environmental information.
+            </p>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="refreshInterval">
+                        Refresh Interval
+                    </label>
+
+                    <select id="refreshInterval">
+
+                        <option value="10">
+                            10 seconds
+                        </option>
+
+                        <option value="30">
+                            30 seconds
+                        </option>
+
+                        <option value="60">
+                            1 minute
+                        </option>
+
+                        <option value="300">
+                            5 minutes
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="riskThreshold">
+                        High-Risk Threshold
+                    </label>
+
+                    <select id="riskThreshold">
+
+                        <option value="50">
+                            50%
+                        </option>
+
+                        <option value="60">
+                            60%
+                        </option>
+
+                        <option value="70">
+                            70%
+                        </option>
+
+                        <option value="80">
+                            80%
+                        </option>
+
+                        <option value="90">
+                            90%
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        Automatic Monitoring
+                    </strong>
+
+                    <span>
+                        Automatically refresh Sentinel monitoring
+                        data.
+                    </span>
+
+                </div>
+
+
+                <label class="switch">
+
+                    <input
+                        type="checkbox"
+                        id="autoMonitoring"
+                        checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        Historical Collection
+                    </strong>
+
+                    <span>
+                        Store monitoring snapshots for historical
+                        analysis.
+                    </span>
+
+                </div>
+
+
+                <label class="switch">
+
+                    <input
+                        type="checkbox"
+                        id="historicalCollection"
+                        checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="button-group">
+
+                <button
+                    class="btn btn-primary"
+                    onclick="saveMonitoring()">
+
+                    Save Monitoring Settings
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="monitoring-message"
+                class="save-message">
+
+                Monitoring settings saved successfully.
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
+         SYSTEM
+    ======================================================= -->
+
+    <section
+        id="system"
+        class="settings-section">
+
+        <div class="card">
+
+            <h2>
+                System Information
+            </h2>
+
+            <p class="card-description">
+                Information about the current Sentinel
+                installation.
+            </p>
+
+
+            <div class="system-grid">
+
+
+                <div class="system-item">
+
+                    <span>
+                        Application
+                    </span>
+
+                    <strong>
+                        Sentinel
+                    </strong>
+
+                </div>
+
+
+                <div class="system-item">
+
+                    <span>
+                        Version
+                    </span>
+
+                    <strong>
+                        1.0.0
+                    </strong>
+
+                </div>
+
+
+                <div class="system-item">
+
+                    <span>
+                        Frontend
+                    </span>
+
+                    <strong>
+                        HTML / CSS / JavaScript
+                    </strong>
+
+                </div>
+
+
+                <div class="system-item">
+
+                    <span>
+                        Backend
+                    </span>
+
+                    <strong>
+                        Python / FastAPI
+                    </strong>
+
+                </div>
+
+
+                <div class="system-item">
+
+                    <span>
+                        Risk Engine
+                    </span>
+
+                    <strong>
+                        Weighted Environmental Model
+                    </strong>
+
+                </div>
+
+
+                <div class="system-item">
+
+                    <span>
+                        API Status
+                    </span>
+
+                    <strong id="api-status">
+                        Checking...
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>
+                Local Data
+            </h2>
+
+            <p class="card-description">
+                Sentinel currently stores browser-based settings
+                and historical demonstration data locally.
+            </p>
+
+
+            <button
+                class="btn btn-danger"
+                onclick="clearLocalData()">
+
+                Clear Local Settings
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<!-- ==========================================================
+     JAVASCRIPT
+========================================================== -->
+
+<script>
+
+const API_URL =
+    "http://127.0.0.1:8000";
+
+
+const SETTINGS_KEY =
+    "sentinelSettings";
+
+
+/* ============================================================
+   DEFAULT SETTINGS
+============================================================ */
+
+const defaultSettings = {
+
+    systemName: "Sentinel",
+
+    adminEmail: "",
+
+    language: "English",
+
+    darkMode: false,
+
+    alertNotifications: true,
+
+    highRiskNotifications: true,
+
+    environmentalNotifications: true,
+
+    dailySummary: false,
+
+    refreshInterval: "30",
+
+    riskThreshold: "70",
+
+    autoMonitoring: true,
+
+    historicalCollection: true
+
+};
+
+
+/* ============================================================
+   LOAD SETTINGS
+============================================================ */
+
+function loadSettings() {
+
+    const saved =
+        JSON.parse(
+            localStorage.getItem(
+                SETTINGS_KEY
+            )
+        );
+
+
+    const settings = {
+
+        ...defaultSettings,
+
+        ...(saved || {})
+
+    };
+
+
+    document.getElementById(
+        "systemName"
+    ).value =
+        settings.systemName;
+
+
+    document.getElementById(
+        "adminEmail"
+    ).value =
+        settings.adminEmail;
+
+
+    document.getElementById(
+        "language"
+    ).value =
+        settings.language;
+
+
+    document.getElementById(
+        "darkMode"
+    ).checked =
+        settings.darkMode;
+
+
+    document.getElementById(
+        "alertNotifications"
+    ).checked =
+        settings.alertNotifications;
+
+
+    document.getElementById(
+        "highRiskNotifications"
+    ).checked =
+        settings.highRiskNotifications;
+
+
+    document.getElementById(
+        "environmentalNotifications"
+    ).checked =
+        settings.environmentalNotifications;
+
+
+    document.getElementById(
+        "dailySummary"
+    ).checked =
+        settings.dailySummary;
+
+
+    document.getElementById(
+        "refreshInterval"
+    ).value =
+        settings.refreshInterval;
+
+
+    document.getElementById(
+        "riskThreshold"
+    ).value =
+        settings.riskThreshold;
+
+
+    document.getElementById(
+        "autoMonitoring"
+    ).checked =
+        settings.autoMonitoring;
+
+
+    document.getElementById(
+        "historicalCollection"
+    ).checked =
+        settings.historicalCollection;
+
+
+    applyDarkMode(
+        settings.darkMode
+    );
+
+}
+
+
+/* ============================================================
+   GET SETTINGS
+============================================================ */
+
+function getSettings() {
+
+    return {
+
+        systemName:
+            document.getElementById(
+                "systemName"
+            ).value,
+
+        adminEmail:
+            document.getElementById(
+                "adminEmail"
+            ).value,
+
+        language:
+            document.getElementById(
+                "language"
+            ).value,
+
+        darkMode:
+            document.getElementById(
+                "darkMode"
+            ).checked,
+
+        alertNotifications:
+            document.getElementById(
+                "alertNotifications"
+            ).checked,
+
+        highRiskNotifications:
+            document.getElementById(
+                "highRiskNotifications"
+            ).checked,
+
+        environmentalNotifications:
+            document.getElementById(
+                "environmentalNotifications"
+            ).checked,
+
+        dailySummary:
+            document.getElementById(
+                "dailySummary"
+            ).checked,
+
+        refreshInterval:
+            document.getElementById(
+                "refreshInterval"
+            ).value,
+
+        riskThreshold:
+            document.getElementById(
+                "riskThreshold"
+            ).value,
+
+        autoMonitoring:
+            document.getElementById(
+                "autoMonitoring"
+            ).checked,
+
+        historicalCollection:
+            document.getElementById(
+                "historicalCollection"
+            ).checked
+
+    };
+
+}
+
+
+/* ============================================================
+   SAVE SETTINGS
+============================================================ */
+
+function saveSettings() {
+
+    const settings =
+        getSettings();
+
+
+    localStorage.setItem(
+        SETTINGS_KEY,
+        JSON.stringify(settings)
+    );
+
+}
+
+
+/* ============================================================
+   GENERAL
+============================================================ */
+
+function saveGeneral() {
+
+    saveSettings();
+
+    showMessage(
+        "general-message"
+    );
+
+}
+
+
+function resetGeneral() {
+
+    document.getElementById(
+        "systemName"
+    ).value =
+        defaultSettings.systemName;
+
+
+    document.getElementById(
+        "adminEmail"
+    ).value =
+        defaultSettings.adminEmail;
+
+
+    document.getElementById(
+        "language"
+    ).value =
+        defaultSettings.language;
+
+
+    document.getElementById(
+        "darkMode"
+    ).checked =
+        defaultSettings.darkMode;
+
+
+    applyDarkMode(false);
+
+    saveSettings();
+
+}
+
+
+/* ============================================================
+   NOTIFICATIONS
+============================================================ */
+
+function saveNotifications() {
+
+    saveSettings();
+
+    showMessage(
+        "notification-message"
+    );
+
+}
+
+
+/* ============================================================
+   MONITORING
+============================================================ */
+
+function saveMonitoring() {
+
+    saveSettings();
+
+    showMessage(
+        "monitoring-message"
+    );
+
+}
+
+
+/* ============================================================
+   MESSAGE
+============================================================ */
+
+function showMessage(id) {
+
+    const message =
+        document.getElementById(id);
+
+
+    message.classList.add(
+        "show"
+    );
+
+
+    setTimeout(
+        function() {
+
+            message.classList.remove(
+                "show"
+            );
+
+        },
+        2500
+    );
+
+}
+
+
+/* ============================================================
+   DARK MODE
+============================================================ */
+
+function toggleDarkMode() {
+
+    const enabled =
+        document.getElementById(
+            "darkMode"
+        ).checked;
+
+
+    applyDarkMode(
+        enabled
+    );
+
+
+    saveSettings();
+
+}
+
+
+function applyDarkMode(enabled) {
+
+    if (enabled) {
+
+        document.body.classList.add(
+            "dark-mode"
+        );
+
+    } else {
+
+        document.body.classList.remove(
+            "dark-mode"
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   TABS
+============================================================ */
+
+function showSection(
+    sectionId,
+    button
+) {
+
+    document
+        .querySelectorAll(
+            ".settings-section"
+        )
+        .forEach(
+            section => {
+
+                section.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+    document
+        .querySelectorAll(
+            ".tab"
+        )
+        .forEach(
+            tab => {
+
+                tab.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+    document.getElementById(
+        sectionId
+    ).classList.add(
+        "active"
+    );
+
+
+    button.classList.add(
+        "active"
+    );
+
+
+    if (sectionId === "system") {
+
+        checkAPI();
+
+    }
+
+}
+
+
+/* ============================================================
+   CHECK API
+============================================================ */
+
+async function checkAPI() {
+
+    const status =
+        document.getElementById(
+            "api-status"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/api/health`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "API unavailable"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            data.status === "healthy"
+        ) {
+
+            status.textContent =
+                "Connected";
+
+        } else {
+
+            status.textContent =
+                "Unknown";
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "API check failed:",
+            error
+        );
+
+        status.textContent =
+            "Disconnected";
+
+    }
+
+}
+
+
+/* ============================================================
+   CLEAR LOCAL DATA
+============================================================ */
+
+function clearLocalData() {
+
+    const confirmed =
+        confirm(
+            "This will remove Sentinel settings and browser-based historical data. Continue?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    localStorage.removeItem(
+        SETTINGS_KEY
+    );
+
+
+    localStorage.removeItem(
+        "sentinelHistoricalData"
+    );
+
+
+    location.reload();
+
+}
+
+
+/* ============================================================
+   INITIALIZE
+============================================================ */
+
+loadSettings();
+
+checkAPI();
+
+</script>
+
+
+</body>
+
+</html>
+```

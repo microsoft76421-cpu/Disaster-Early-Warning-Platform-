@@ -1,0 +1,915 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Sentinel | Alerts</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            padding: 25px 15px;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 35px;
+        }
+
+        .nav a {
+            display: block;
+            text-decoration: none;
+            color: #d1d5db;
+            padding: 13px 15px;
+            margin-bottom: 7px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+
+        /* =====================================================
+           TOP BAR
+        ===================================================== */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .topbar p {
+            color: #6b7280;
+        }
+
+        .system-status {
+            background: #dcfce7;
+            color: #166534;
+            padding: 9px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+
+        /* =====================================================
+           ALERT HERO
+        ===================================================== */
+
+        .alert-hero {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+            border-left: 7px solid #dc2626;
+        }
+
+        .alert-status {
+            display: inline-block;
+            padding: 7px 14px;
+            border-radius: 20px;
+            background: #fee2e2;
+            color: #991b1b;
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .alert-hero h2 {
+            font-size: 28px;
+            color: #991b1b;
+            margin-bottom: 12px;
+        }
+
+        .alert-hero p {
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           INFORMATION CARDS
+        ===================================================== */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .card-title {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .card-value {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+
+        /* =====================================================
+           RECOMMENDATION
+        ===================================================== */
+
+        .recommendation {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .recommendation h2 {
+            margin-bottom: 12px;
+        }
+
+        .recommendation p {
+            color: #4b5563;
+            line-height: 1.7;
+        }
+
+
+        /* =====================================================
+           ALERT INFORMATION
+        ===================================================== */
+
+        .alert-information {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .information-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .information-card h2 {
+            margin-bottom: 18px;
+        }
+
+        .information-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .information-row:last-child {
+            border-bottom: none;
+        }
+
+        .information-label {
+            color: #6b7280;
+        }
+
+        .information-value {
+            font-weight: bold;
+        }
+
+
+        /* =====================================================
+           REFRESH
+        ===================================================== */
+
+        .refresh-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .refresh-button {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .refresh-button:hover {
+            background: #1d4ed8;
+        }
+
+        .last-updated {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .footer {
+            margin-top: 30px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 900px) {
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .alert-information {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .sidebar {
+                width: 190px;
+            }
+
+            .main {
+                margin-left: 190px;
+                padding: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            SENTINEL
+        </div>
+
+        <div class="subtitle">
+            Disaster Early-Warning Platform
+        </div>
+
+
+        <nav class="nav">
+
+            <a href="index.html">
+                Dashboard
+            </a>
+
+            <a
+                href="alerts.html"
+                class="active"
+            >
+                Alerts
+            </a>
+
+            <a href="environmental.html">
+                Environmental Data
+            </a>
+
+            <a href="risk-analysis.html">
+                Risk Analysis
+            </a>
+
+            <a href="zones.html">
+                Zones
+            </a>
+
+            <a href="historical-data.html">
+                Historical Data
+            </a>
+
+            <a href="reports.html">
+                Reports
+            </a>
+
+            <a href="settings.html">
+                Settings
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- =================================================
+             TOP BAR
+        ================================================== -->
+
+        <div class="topbar">
+
+            <div>
+
+                <h1>
+                    Alerts
+                </h1>
+
+                <p>
+                    Current disaster warnings and environmental alerts
+                </p>
+
+            </div>
+
+
+            <div
+                class="system-status"
+                id="system-status"
+            >
+                Connecting...
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             MAIN ALERT
+        ================================================== -->
+
+        <section class="alert-hero">
+
+            <div
+                class="alert-status"
+                id="alert-status"
+            >
+                LOADING
+            </div>
+
+
+            <h2 id="alert-headline">
+                Loading alert...
+            </h2>
+
+
+            <p id="alert-message">
+                Connecting to Sentinel risk analysis engine...
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             ALERT CARDS
+        ================================================== -->
+
+        <section class="cards">
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Risk Score
+                </div>
+
+                <div class="card-value">
+
+                    <span id="risk-score">
+                        --
+                    </span>
+
+                    %
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Risk Level
+                </div>
+
+                <div class="card-value">
+
+                    <span id="risk-level">
+                        --
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Alert Location
+                </div>
+
+                <div class="card-value">
+
+                    <span id="location">
+                        --
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =================================================
+             RECOMMENDATION
+        ================================================== -->
+
+        <section class="recommendation">
+
+            <h2>
+                Recommended Action
+            </h2>
+
+            <p id="recommendation">
+                Loading recommendation...
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             ALERT INFORMATION
+        ================================================== -->
+
+        <section class="alert-information">
+
+
+            <div class="information-card">
+
+                <h2>
+                    Alert Details
+                </h2>
+
+
+                <div class="information-row">
+
+                    <span class="information-label">
+                        Alert Status
+                    </span>
+
+                    <span
+                        class="information-value"
+                        id="details-status"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+
+                <div class="information-row">
+
+                    <span class="information-label">
+                        Risk Level
+                    </span>
+
+                    <span
+                        class="information-value"
+                        id="details-risk"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+
+                <div class="information-row">
+
+                    <span class="information-label">
+                        Risk Score
+                    </span>
+
+                    <span
+                        class="information-value"
+                        id="details-score"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="information-card">
+
+                <h2>
+                    System Information
+                </h2>
+
+
+                <div class="information-row">
+
+                    <span class="information-label">
+                        System
+                    </span>
+
+                    <span class="information-value">
+                        Sentinel
+                    </span>
+
+                </div>
+
+
+                <div class="information-row">
+
+                    <span class="information-label">
+                        Monitoring
+                    </span>
+
+                    <span class="information-value">
+                        Active
+                    </span>
+
+                </div>
+
+
+                <div class="information-row">
+
+                    <span class="information-label">
+                        Data Source
+                    </span>
+
+                    <span class="information-value">
+                        Sentinel API
+                    </span>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             REFRESH
+        ================================================== -->
+
+        <div class="refresh-section">
+
+            <span
+                class="last-updated"
+                id="last-updated"
+            >
+                Last updated: --
+            </span>
+
+
+            <button
+                class="refresh-button"
+                onclick="loadAlert()"
+            >
+                Refresh Alert
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <div class="footer">
+
+            Sentinel Disaster Early-Warning Platform
+
+        </div>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+        const API_URL =
+            "http://127.0.0.1:8000";
+
+
+        // ====================================================
+        // LOAD ALERT FROM FASTAPI
+        // ====================================================
+
+        async function loadAlert() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/api/alert`
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to load alert"
+                    );
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                console.log(
+                    "Sentinel Alert:",
+                    data
+                );
+
+
+                // =================================================
+                // SYSTEM STATUS
+                // =================================================
+
+                document.getElementById(
+                    "system-status"
+                ).textContent =
+                    "Operational";
+
+
+                // =================================================
+                // ALERT STATUS
+                // =================================================
+
+                document.getElementById(
+                    "alert-status"
+                ).textContent =
+                    data.alert_status;
+
+
+                document.getElementById(
+                    "details-status"
+                ).textContent =
+                    data.alert_status;
+
+
+                // =================================================
+                // ALERT HEADLINE
+                // =================================================
+
+                document.getElementById(
+                    "alert-headline"
+                ).textContent =
+                    data.headline;
+
+
+                // =================================================
+                // ALERT MESSAGE
+                // =================================================
+
+                document.getElementById(
+                    "alert-message"
+                ).textContent =
+                    data.message;
+
+
+                // =================================================
+                // RISK SCORE
+                // =================================================
+
+                document.getElementById(
+                    "risk-score"
+                ).textContent =
+                    data.risk_score;
+
+
+                document.getElementById(
+                    "details-score"
+                ).textContent =
+                    data.risk_score + "%";
+
+
+                // =================================================
+                // RISK LEVEL
+                // =================================================
+
+                document.getElementById(
+                    "risk-level"
+                ).textContent =
+                    data.risk_level;
+
+
+                document.getElementById(
+                    "details-risk"
+                ).textContent =
+                    data.risk_level;
+
+
+                // =================================================
+                // RECOMMENDATION
+                // =================================================
+
+                document.getElementById(
+                    "recommendation"
+                ).textContent =
+                    data.recommendation;
+
+
+                // =================================================
+                // LOCATION
+                // =================================================
+
+                /*
+                 * The /api/alert endpoint currently does not
+                 * return a location, so we obtain it from the
+                 * environmental endpoint.
+                 */
+
+                const environmentalResponse =
+                    await fetch(
+                        `${API_URL}/api/environmental`
+                    );
+
+
+                if (environmentalResponse.ok) {
+
+                    const environmental =
+                        await environmentalResponse.json();
+
+
+                    document.getElementById(
+                        "location"
+                    ).textContent =
+                        environmental.data.location;
+
+                }
+
+
+                // =================================================
+                // TIMESTAMP
+                // =================================================
+
+                const date =
+                    new Date(data.timestamp);
+
+
+                document.getElementById(
+                    "last-updated"
+                ).textContent =
+                    "Last updated: " +
+                    date.toLocaleString();
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "Sentinel Alert Error:",
+                    error
+                );
+
+
+                document.getElementById(
+                    "system-status"
+                ).textContent =
+                    "Backend Offline";
+
+
+                document.getElementById(
+                    "alert-status"
+                ).textContent =
+                    "OFFLINE";
+
+
+                document.getElementById(
+                    "alert-headline"
+                ).textContent =
+                    "Unable to load alert";
+
+
+                document.getElementById(
+                    "alert-message"
+                ).textContent =
+                    "Make sure the Sentinel FastAPI backend is running.";
+
+            }
+
+        }
+
+
+        // ====================================================
+        // INITIAL LOAD
+        // ====================================================
+
+        loadAlert();
+
+
+        // ====================================================
+        // AUTOMATIC REFRESH
+        // Every 30 seconds
+        // ====================================================
+
+        setInterval(
+            loadAlert,
+            30000
+        );
+
+    </script>
+
+
+</body>
+
+</html>
+```

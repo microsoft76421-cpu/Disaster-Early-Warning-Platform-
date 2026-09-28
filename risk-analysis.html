@@ -1,0 +1,812 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sentinel | Risk Analysis</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            padding: 25px 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 35px;
+            padding-left: 12px;
+        }
+
+        .logo span {
+            color: #38bdf8;
+        }
+
+        .nav a {
+            display: block;
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 13px 15px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .nav a:hover {
+            background: #1e293b;
+            color: white;
+        }
+
+        .nav a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* =====================================================
+           MAIN CONTENT
+        ===================================================== */
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+        }
+
+        .header p {
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .refresh-btn {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .refresh-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* =====================================================
+           CARDS
+        ===================================================== */
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        }
+
+        .card h3 {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .big-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .risk-value {
+            color: #dc2626;
+        }
+
+        .risk-level {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* =====================================================
+           RISK SCORE
+        ===================================================== */
+
+        .risk-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+
+        .risk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background: #e5e7eb;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #dc2626;
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+
+        /* =====================================================
+           TWO COLUMNS
+        ===================================================== */
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .reason-list {
+            margin-top: 15px;
+            list-style: none;
+        }
+
+        .reason-list li {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f8fafc;
+            border-left: 4px solid #2563eb;
+            border-radius: 5px;
+        }
+
+        .recommendation {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff7ed;
+            border-left: 4px solid #f97316;
+            border-radius: 6px;
+            line-height: 1.6;
+        }
+
+        /* =====================================================
+           FACTORS
+        ===================================================== */
+
+        .factor {
+            margin-top: 15px;
+        }
+
+        .factor-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 7px;
+        }
+
+        .factor-bar {
+            height: 9px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .factor-fill {
+            height: 100%;
+            background: #2563eb;
+        }
+
+        /* =====================================================
+           FOOTER INFO
+        ===================================================== */
+
+        .info {
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 200px;
+            }
+
+            .main {
+                margin-left: 200px;
+            }
+
+            .grid,
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ==========================================================
+     SIDEBAR
+========================================================== -->
+
+<div class="sidebar">
+
+    <div class="logo">
+        SENTINEL<span>.</span>
+    </div>
+
+    <div class="nav">
+
+        <a href="index.html">Dashboard</a>
+
+        <a href="alerts.html">Alerts</a>
+
+        <a href="environmental.html">Environmental Data</a>
+
+        <a href="risk-analysis.html" class="active">
+            Risk Analysis
+        </a>
+
+        <a href="zones.html">Zones</a>
+
+        <a href="historical-data.html">
+            Historical Data
+        </a>
+
+        <a href="reports.html">
+            Reports
+        </a>
+
+        <a href="settings.html">
+            Settings
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     MAIN
+========================================================== -->
+
+<div class="main">
+
+    <div class="header">
+
+        <div>
+            <h1>Risk Analysis</h1>
+
+            <p>
+                Environmental risk assessment generated by the
+                Sentinel analysis engine.
+            </p>
+        </div>
+
+        <button class="refresh-btn" onclick="loadRisk()">
+            Refresh Analysis
+        </button>
+
+    </div>
+
+
+    <!-- ======================================================
+         SUMMARY CARDS
+    ======================================================= -->
+
+    <div class="grid">
+
+        <div class="card">
+
+            <h3>Overall Risk Score</h3>
+
+            <div
+                id="risk-score"
+                class="big-value risk-value">
+                --
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Risk Level</h3>
+
+            <div
+                id="risk-level"
+                class="risk-level">
+                Loading...
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Monitoring Location</h3>
+
+            <div
+                id="location"
+                class="big-value"
+                style="font-size:24px;">
+                --
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         RISK SCORE BAR
+    ======================================================= -->
+
+    <div class="risk-panel">
+
+        <div class="risk-header">
+
+            <h2>Risk Score</h2>
+
+            <strong id="score-label">
+                0 / 100
+            </strong>
+
+        </div>
+
+        <div class="progress-container">
+
+            <div
+                id="progress-bar"
+                class="progress-bar">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         ANALYSIS DETAILS
+    ======================================================= -->
+
+    <div class="two-column">
+
+
+        <!-- REASONS -->
+
+        <div class="card">
+
+            <h2>Risk Factors Detected</h2>
+
+            <ul
+                id="reason-list"
+                class="reason-list">
+
+                <li>
+                    Loading risk analysis...
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <!-- RECOMMENDATION -->
+
+        <div class="card">
+
+            <h2>Recommended Action</h2>
+
+            <div
+                id="recommendation"
+                class="recommendation">
+
+                Loading recommendation...
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         WEIGHTED FACTORS
+    ======================================================= -->
+
+    <div
+        class="card"
+        style="margin-top:20px;">
+
+        <h2>Risk Calculation Factors</h2>
+
+        <p
+            style="color:#64748b;margin-top:8px;">
+            The current Sentinel model calculates the overall
+            risk score using weighted environmental indicators.
+        </p>
+
+
+        <!-- RAINFALL -->
+
+        <div class="factor">
+
+            <div class="factor-top">
+
+                <span>Rainfall</span>
+
+                <strong>35%</strong>
+
+            </div>
+
+            <div class="factor-bar">
+
+                <div
+                    class="factor-fill"
+                    style="width:35%;">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIVER -->
+
+        <div class="factor">
+
+            <div class="factor-top">
+
+                <span>River Level</span>
+
+                <strong>35%</strong>
+
+            </div>
+
+            <div class="factor-bar">
+
+                <div
+                    class="factor-fill"
+                    style="width:35%;">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FORECAST -->
+
+        <div class="factor">
+
+            <div class="factor-top">
+
+                <span>Forecast Rainfall</span>
+
+                <strong>20%</strong>
+
+            </div>
+
+            <div class="factor-bar">
+
+                <div
+                    class="factor-fill"
+                    style="width:20%;">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- WIND -->
+
+        <div class="factor">
+
+            <div class="factor-top">
+
+                <span>Wind Speed</span>
+
+                <strong>10%</strong>
+
+            </div>
+
+            <div class="factor-bar">
+
+                <div
+                    class="factor-fill"
+                    style="width:10%;">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         SYSTEM INFORMATION
+    ======================================================= -->
+
+    <div class="info">
+
+        <p>
+            Analysis source:
+            <strong>Sentinel FastAPI Risk Engine</strong>
+        </p>
+
+        <p>
+            Last analysis:
+            <strong id="timestamp">--</strong>
+        </p>
+
+        <p>
+            API endpoint:
+            <strong>/api/risk</strong>
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     JAVASCRIPT
+========================================================== -->
+
+<script>
+
+const API_URL = "http://127.0.0.1:8000";
+
+
+async function loadRisk() {
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/risk`
+        );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Risk API request failed"
+            );
+
+        }
+
+        const result = await response.json();
+
+
+        /* ==============================================
+           RISK SCORE
+        ============================================== */
+
+        const score = result.risk_score;
+
+        document.getElementById(
+            "risk-score"
+        ).textContent = score;
+
+
+        document.getElementById(
+            "score-label"
+        ).textContent = `${score} / 100`;
+
+
+        /* ==============================================
+           PROGRESS BAR
+        ============================================== */
+
+        document.getElementById(
+            "progress-bar"
+        ).style.width = `${score}%`;
+
+
+        /* ==============================================
+           RISK LEVEL
+        ============================================== */
+
+        const riskLevel =
+            document.getElementById("risk-level");
+
+        riskLevel.textContent =
+            result.risk_level;
+
+
+        /* ==============================================
+           LOCATION
+        ============================================== */
+
+        document.getElementById(
+            "location"
+        ).textContent =
+            result.location;
+
+
+        /* ==============================================
+           REASONS
+        ============================================== */
+
+        const reasonList =
+            document.getElementById(
+                "reason-list"
+            );
+
+        reasonList.innerHTML = "";
+
+
+        if (
+            result.reasons &&
+            result.reasons.length > 0
+        ) {
+
+            result.reasons.forEach(
+                function(reason) {
+
+                    const li =
+                        document.createElement("li");
+
+                    li.textContent = reason;
+
+                    reasonList.appendChild(li);
+
+                }
+            );
+
+        } else {
+
+            const li =
+                document.createElement("li");
+
+            li.textContent =
+                "No major risk factors detected.";
+
+            reasonList.appendChild(li);
+
+        }
+
+
+        /* ==============================================
+           RECOMMENDATION
+        ============================================== */
+
+        document.getElementById(
+            "recommendation"
+        ).textContent =
+            result.recommendation;
+
+
+        /* ==============================================
+           TIMESTAMP
+        ============================================== */
+
+        if (result.timestamp) {
+
+            const date =
+                new Date(result.timestamp);
+
+            document.getElementById(
+                "timestamp"
+            ).textContent =
+                date.toLocaleString();
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Risk analysis error:",
+            error
+        );
+
+        document.getElementById(
+            "risk-level"
+        ).textContent =
+            "API ERROR";
+
+        document.getElementById(
+            "recommendation"
+        ).textContent =
+            "Unable to retrieve risk analysis. Make sure the Sentinel FastAPI server is running.";
+
+    }
+
+}
+
+
+/* ============================================================
+   INITIAL LOAD
+============================================================ */
+
+loadRisk();
+
+
+/* ============================================================
+   AUTOMATIC REFRESH
+============================================================ */
+
+setInterval(
+    loadRisk,
+    30000
+);
+
+</script>
+
+</body>
+</html>
+```

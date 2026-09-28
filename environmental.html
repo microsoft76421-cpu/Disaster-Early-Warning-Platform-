@@ -1,0 +1,916 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sentinel | Environmental Data</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            padding: 25px 15px;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 35px;
+        }
+
+        .nav a {
+            display: block;
+            text-decoration: none;
+            color: #d1d5db;
+            padding: 13px 15px;
+            margin-bottom: 7px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        /* =====================================================
+           TOPBAR
+        ===================================================== */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .topbar p {
+            color: #6b7280;
+        }
+
+        .system-status {
+            background: #dcfce7;
+            color: #166534;
+            padding: 9px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* =====================================================
+           LOCATION
+        ===================================================== */
+
+        .location-card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .location-card h2 {
+            margin-bottom: 8px;
+        }
+
+        .location-card p {
+            color: #6b7280;
+        }
+
+        /* =====================================================
+           ENVIRONMENTAL CARDS
+        ===================================================== */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .card-title {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .unit {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: normal;
+        }
+
+        /* =====================================================
+           FORECAST
+        ===================================================== */
+
+        .forecast {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .forecast h2 {
+            margin-bottom: 12px;
+        }
+
+        .forecast-value {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        /* =====================================================
+           MONITORING INFORMATION
+        ===================================================== */
+
+        .monitoring {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .info-card h2 {
+            margin-bottom: 18px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: #6b7280;
+        }
+
+        .value {
+            font-weight: bold;
+        }
+
+        /* =====================================================
+           REFRESH
+        ===================================================== */
+
+        .refresh-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .refresh-button {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .refresh-button:hover {
+            background: #1d4ed8;
+        }
+
+        .last-updated {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .footer {
+            margin-top: 30px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 900px) {
+
+            .cards {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .monitoring {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .sidebar {
+                width: 190px;
+            }
+
+            .main {
+                margin-left: 190px;
+                padding: 15px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            SENTINEL
+        </div>
+
+        <div class="subtitle">
+            Disaster Early-Warning Platform
+        </div>
+
+        <nav class="nav">
+
+            <a href="index.html">
+                Dashboard
+            </a>
+
+            <a href="alerts.html">
+                Alerts
+            </a>
+
+            <a href="environmental.html" class="active">
+                Environmental Data
+            </a>
+
+            <a href="risk-analysis.html">
+                Risk Analysis
+            </a>
+
+            <a href="zones.html">
+                Zones
+            </a>
+
+            <a href="historical-data.html">
+                Historical Data
+            </a>
+
+            <a href="reports.html">
+                Reports
+            </a>
+
+            <a href="settings.html">
+                Settings
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+
+            <div>
+
+                <h1>
+                    Environmental Data
+                </h1>
+
+                <p>
+                    Current environmental conditions monitored by Sentinel
+                </p>
+
+            </div>
+
+            <div
+                class="system-status"
+                id="system-status"
+            >
+                Connecting...
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             LOCATION
+        ================================================== -->
+
+        <section class="location-card">
+
+            <h2>
+                Monitoring Location
+            </h2>
+
+            <p id="location">
+                Loading location...
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             ENVIRONMENTAL DATA
+        ================================================== -->
+
+        <section class="cards">
+
+            <!-- RAINFALL -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    Rainfall
+                </div>
+
+                <div class="card-value">
+
+                    <span id="rainfall">
+                        --
+                    </span>
+
+                    <span class="unit">
+                        mm
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- TEMPERATURE -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    Temperature
+                </div>
+
+                <div class="card-value">
+
+                    <span id="temperature">
+                        --
+                    </span>
+
+                    <span class="unit">
+                        °C
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- RIVER LEVEL -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    River Level
+                </div>
+
+                <div class="card-value">
+
+                    <span id="river-level">
+                        --
+                    </span>
+
+                    <span class="unit">
+                        %
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- WIND -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    Wind Speed
+                </div>
+
+                <div class="card-value">
+
+                    <span id="wind-speed">
+                        --
+                    </span>
+
+                    <span class="unit">
+                        km/h
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- FORECAST -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    Forecast Rainfall
+                </div>
+
+                <div class="card-value">
+
+                    <span id="forecast-rainfall">
+                        --
+                    </span>
+
+                    <span class="unit">
+                        mm
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- DATA STATUS -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    Data Status
+                </div>
+
+                <div class="card-value">
+
+                    <span id="data-status">
+                        --
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             FORECAST
+        ================================================== -->
+
+        <section class="forecast">
+
+            <h2>
+                Rainfall Forecast
+            </h2>
+
+            <div class="forecast-value">
+
+                <span id="forecast-display">
+                    --
+                </span>
+
+                <span class="unit">
+                    mm expected
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             MONITORING INFORMATION
+        ================================================== -->
+
+        <section class="monitoring">
+
+            <div class="info-card">
+
+                <h2>
+                    Monitoring Information
+                </h2>
+
+                <div class="info-row">
+
+                    <span class="label">
+                        Location
+                    </span>
+
+                    <span
+                        class="value"
+                        id="info-location"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+                <div class="info-row">
+
+                    <span class="label">
+                        Rainfall
+                    </span>
+
+                    <span
+                        class="value"
+                        id="info-rainfall"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+                <div class="info-row">
+
+                    <span class="label">
+                        River Level
+                    </span>
+
+                    <span
+                        class="value"
+                        id="info-river"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <h2>
+                    System Information
+                </h2>
+
+                <div class="info-row">
+
+                    <span class="label">
+                        Data Source
+                    </span>
+
+                    <span class="value">
+                        Sentinel API
+                    </span>
+
+                </div>
+
+                <div class="info-row">
+
+                    <span class="label">
+                        Monitoring
+                    </span>
+
+                    <span class="value">
+                        Active
+                    </span>
+
+                </div>
+
+                <div class="info-row">
+
+                    <span class="label">
+                        Update Interval
+                    </span>
+
+                    <span class="value">
+                        30 seconds
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             REFRESH
+        ================================================== -->
+
+        <div class="refresh-section">
+
+            <span
+                class="last-updated"
+                id="last-updated"
+            >
+                Last updated: --
+            </span>
+
+            <button
+                class="refresh-button"
+                onclick="loadEnvironmentalData()"
+            >
+                Refresh Data
+            </button>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+
+            Sentinel Disaster Early-Warning Platform
+
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+        const API_URL =
+            "http://127.0.0.1:8000";
+
+
+        // ====================================================
+        // LOAD ENVIRONMENTAL DATA
+        // ====================================================
+
+        async function loadEnvironmentalData() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/api/environmental`
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Environmental API request failed"
+                    );
+
+                }
+
+
+                const result =
+                    await response.json();
+
+
+                console.log(
+                    "Environmental Data:",
+                    result
+                );
+
+
+                const data =
+                    result.data;
+
+
+                // =================================================
+                // SYSTEM
+                // =================================================
+
+                document.getElementById(
+                    "system-status"
+                ).textContent =
+                    "Operational";
+
+
+                document.getElementById(
+                    "data-status"
+                ).textContent =
+                    "LIVE";
+
+
+                // =================================================
+                // ENVIRONMENTAL VALUES
+                // =================================================
+
+                document.getElementById(
+                    "rainfall"
+                ).textContent =
+                    data.rainfall;
+
+
+                document.getElementById(
+                    "temperature"
+                ).textContent =
+                    data.temperature;
+
+
+                document.getElementById(
+                    "river-level"
+                ).textContent =
+                    data.river_level;
+
+
+                document.getElementById(
+                    "wind-speed"
+                ).textContent =
+                    data.wind_speed;
+
+
+                document.getElementById(
+                    "forecast-rainfall"
+                ).textContent =
+                    data.forecast_rainfall;
+
+
+                document.getElementById(
+                    "forecast-display"
+                ).textContent =
+                    data.forecast_rainfall;
+
+
+                // =================================================
+                // LOCATION
+                // =================================================
+
+                document.getElementById(
+                    "location"
+                ).textContent =
+                    data.location;
+
+
+                document.getElementById(
+                    "info-location"
+                ).textContent =
+                    data.location;
+
+
+                // =================================================
+                // INFORMATION
+                // =================================================
+
+                document.getElementById(
+                    "info-rainfall"
+                ).textContent =
+                    data.rainfall + " mm";
+
+
+                document.getElementById(
+                    "info-river"
+                ).textContent =
+                    data.river_level + "%";
+
+
+                // =================================================
+                // TIMESTAMP
+                // =================================================
+
+                const date =
+                    new Date(data.timestamp);
+
+
+                document.getElementById(
+                    "last-updated"
+                ).textContent =
+                    "Last updated: " +
+                    date.toLocaleString();
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "Environmental API Error:",
+                    error
+                );
+
+
+                document.getElementById(
+                    "system-status"
+                ).textContent =
+                    "Backend Offline";
+
+
+                document.getElementById(
+                    "data-status"
+                ).textContent =
+                    "OFFLINE";
+
+
+                document.getElementById(
+                    "location"
+                ).textContent =
+                    "Unable to connect to Sentinel API";
+
+            }
+
+        }
+
+
+        // ====================================================
+        // INITIAL LOAD
+        // ====================================================
+
+        loadEnvironmentalData();
+
+
+        // ====================================================
+        // AUTOMATIC REFRESH
+        // Every 30 seconds
+        // ====================================================
+
+        setInterval(
+            loadEnvironmentalData,
+            30000
+        );
+
+    </script>
+
+</body>
+
+</html>
+```

@@ -1,0 +1,717 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sentinel | Zones</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            padding: 25px 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 35px;
+            padding-left: 12px;
+        }
+
+        .logo span {
+            color: #38bdf8;
+        }
+
+        .nav a {
+            display: block;
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 13px 15px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .nav a:hover {
+            background: #1e293b;
+            color: white;
+        }
+
+        .nav a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+        }
+
+        .header p {
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        .refresh-btn {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .refresh-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* ================= SUMMARY ================= */
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        }
+
+        .summary-card h3 {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .summary-value {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        /* ================= ZONE GRID ================= */
+
+        .zone-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .zone-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        }
+
+        .zone-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .zone-name {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .zone-id {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* ================= RISK BADGE ================= */
+
+        .badge {
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .extreme {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .high {
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        .moderate {
+            background: #fef3c7;
+            color: #a16207;
+        }
+
+        .low {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        /* ================= SCORE ================= */
+
+        .score-section {
+            margin-top: 15px;
+        }
+
+        .score-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .score-bar {
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: #2563eb;
+            transition: width 0.5s ease;
+        }
+
+        .zone-action {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* ================= INFO ================= */
+
+        .info-panel {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            margin-top: 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        }
+
+        .info-panel h2 {
+            margin-bottom: 10px;
+        }
+
+        .info-panel p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .status {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 950px) {
+
+            .summary,
+            .zone-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .summary,
+            .zone-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ==========================================================
+     SIDEBAR
+========================================================== -->
+
+<div class="sidebar">
+
+    <div class="logo">
+        SENTINEL<span>.</span>
+    </div>
+
+    <div class="nav">
+
+        <a href="index.html">Dashboard</a>
+
+        <a href="alerts.html">Alerts</a>
+
+        <a href="environmental.html">
+            Environmental Data
+        </a>
+
+        <a href="risk-analysis.html">
+            Risk Analysis
+        </a>
+
+        <a href="zones.html" class="active">
+            Zones
+        </a>
+
+        <a href="historical-data.html">
+            Historical Data
+        </a>
+
+        <a href="reports.html">
+            Reports
+        </a>
+
+        <a href="settings.html">
+            Settings
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     MAIN CONTENT
+========================================================== -->
+
+<div class="main">
+
+    <div class="header">
+
+        <div>
+
+            <h1>Monitoring Zones</h1>
+
+            <p>
+                Monitor disaster risk levels across Sentinel
+                geographic zones.
+            </p>
+
+        </div>
+
+        <button
+            class="refresh-btn"
+            onclick="loadZones()">
+
+            Refresh Zones
+
+        </button>
+
+    </div>
+
+
+    <!-- ======================================================
+         SUMMARY
+    ======================================================= -->
+
+    <div class="summary">
+
+        <div class="summary-card">
+
+            <h3>Total Zones</h3>
+
+            <div
+                id="total-zones"
+                class="summary-value">
+                --
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <h3>High / Extreme Risk</h3>
+
+            <div
+                id="danger-zones"
+                class="summary-value">
+                --
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <h3>Low / Moderate Risk</h3>
+
+            <div
+                id="safe-zones"
+                class="summary-value">
+                --
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         ZONES
+    ======================================================= -->
+
+    <div
+        id="zone-container"
+        class="zone-grid">
+
+        <div class="zone-card">
+
+            Loading zone information...
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         INFORMATION
+    ======================================================= -->
+
+    <div class="info-panel">
+
+        <h2>Zone Monitoring</h2>
+
+        <p>
+            Sentinel separates the monitored area into geographic
+            zones. Each zone receives a risk score and risk level
+            so emergency teams can identify areas that require
+            closer monitoring.
+        </p>
+
+        <div class="status">
+
+            API:
+            <strong>
+                /api/zones
+            </strong>
+
+            &nbsp; | &nbsp;
+
+            Auto refresh:
+            <strong>
+                30 seconds
+            </strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     JAVASCRIPT
+========================================================== -->
+
+<script>
+
+const API_URL = "http://127.0.0.1:8000";
+
+
+/* ============================================================
+   LOAD ZONES
+============================================================ */
+
+async function loadZones() {
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/zones`
+        );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to retrieve zones"
+            );
+
+        }
+
+        const result = await response.json();
+
+        const zones = result.zones || [];
+
+
+        /* ====================================================
+           SUMMARY
+        ==================================================== */
+
+        const total =
+            zones.length;
+
+        const danger =
+            zones.filter(zone =>
+                zone.risk_score >= 60
+            ).length;
+
+        const safe =
+            zones.filter(zone =>
+                zone.risk_score < 60
+            ).length;
+
+
+        document.getElementById(
+            "total-zones"
+        ).textContent = total;
+
+
+        document.getElementById(
+            "danger-zones"
+        ).textContent = danger;
+
+
+        document.getElementById(
+            "safe-zones"
+        ).textContent = safe;
+
+
+        /* ====================================================
+           ZONE CARDS
+        ==================================================== */
+
+        const container =
+            document.getElementById(
+                "zone-container"
+            );
+
+        container.innerHTML = "";
+
+
+        zones.forEach(zone => {
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "zone-card";
+
+
+            const riskClass =
+                String(zone.risk_level)
+                    .toLowerCase();
+
+
+            let action;
+
+            if (zone.risk_score >= 80) {
+
+                action =
+                    "Immediate attention required. Follow official emergency instructions.";
+
+            }
+
+            else if (zone.risk_score >= 60) {
+
+                action =
+                    "High risk detected. Continue close monitoring and prepare for possible warnings.";
+
+            }
+
+            else if (zone.risk_score >= 40) {
+
+                action =
+                    "Moderate risk. Continue monitoring environmental conditions.";
+
+            }
+
+            else {
+
+                action =
+                    "Low risk currently detected. Continue normal monitoring.";
+
+            }
+
+
+            card.innerHTML = `
+
+                <div class="zone-top">
+
+                    <div>
+
+                        <div class="zone-name">
+                            ${zone.name}
+                        </div>
+
+                        <div class="zone-id">
+                            Zone ID: ${zone.id}
+                        </div>
+
+                    </div>
+
+                    <div class="badge ${riskClass}">
+                        ${zone.risk_level}
+                    </div>
+
+                </div>
+
+
+                <div class="score-section">
+
+                    <div class="score-header">
+
+                        <span>
+                            Risk Score
+                        </span>
+
+                        <strong>
+                            ${zone.risk_score} / 100
+                        </strong>
+
+                    </div>
+
+
+                    <div class="score-bar">
+
+                        <div
+                            class="score-fill"
+                            style="width:${zone.risk_score}%">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="zone-action">
+
+                    <strong>
+                        Recommended monitoring:
+                    </strong>
+
+                    <br>
+
+                    ${action}
+
+                </div>
+
+            `;
+
+
+            container.appendChild(card);
+
+        });
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Zone loading error:",
+            error
+        );
+
+
+        document.getElementById(
+            "zone-container"
+        ).innerHTML = `
+
+            <div class="zone-card">
+
+                <h3>
+                    Unable to load zone data
+                </h3>
+
+                <p style="margin-top:10px;color:#64748b;">
+
+                    Make sure your Sentinel FastAPI
+                    server is running.
+
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* ============================================================
+   INITIAL LOAD
+============================================================ */
+
+loadZones();
+
+
+/* ============================================================
+   AUTO REFRESH
+============================================================ */
+
+setInterval(
+    loadZones,
+    30000
+);
+
+</script>
+
+</body>
+</html>
+```
